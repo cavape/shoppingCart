@@ -63,7 +63,7 @@ a:hover, a:focus,
 	margin: 0 auto;
 	padding: 2em 0;
 	max-width: 1000px;
-	text-align: right;
+	text-align: center;
 }
 
 /* Header */
@@ -192,6 +192,13 @@ a:hover, a:focus,
 	height: 4em;
 	background: rgba(181, 183, 188, 0.3);
 }
+.dummy-header span{
+	margin: 5px 15px 0 15px;
+	line-height: 2;
+	font-size: 35px;
+	cursor: pointer;
+}
+
 
 .dummy-sidebar {
 	position: absolute;
@@ -279,6 +286,13 @@ width: 100%
 .dummy-grid--highlight .dummy-grid__item:nth-child(4)::before,
 .dummy-grid--highlight .dummy-grid__item:nth-child(7)::before {
 	background: rgba(228, 136, 149, 0.5);
+}
+
+.NameProd, .PriceProd{
+	text-align: center;
+	margin: 10px;
+	font-size: 15px;
+	min-height: 50px;
 }
 
 /*.dummy-grid__item::before,
@@ -686,3 +700,7 @@ body.color-3 #cdawrap a {
 		transform: translate3d(-100%, 0, 0);
 	}
 }
+
+
+
+
