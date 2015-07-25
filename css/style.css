@@ -719,3 +719,8 @@ input{
 .BuyNow:hover{
 	background-color: #517cad
 }
+
+
+.checkOutName{
+	text-transform: initial;
+}

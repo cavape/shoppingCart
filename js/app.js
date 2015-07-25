@@ -1,56 +1,119 @@
 $(document).ready(function(){
+    items_call('shirts');
+    //Click Shirts
+    $('.selectShirt').click(function(){
+            if(_clothing.shirts.length > 0){
+                draw_items(_clothing.shirts,'shirts');
+            }
+            else{
+              items_call('shirts');
+            }
+    });
+    $('.selectPants').click(function(){
+           if(_clothing.pants.length > 0){
+                draw_items(_clothing.pants,'pants');
+            }
+            else{
+              items_call('pants');
+            }
+    });
+    $('.selectShoes').click(function(){
+            if(_clothing.shoes.length > 0){
+                draw_items(_clothing.shoes,'shoes');
+            }
+            else{
+              items_call('shoes');
+            }
+    });
 
-	    shirts_call();
-	    
-	  
+    $(".checkout__button").click(function(){
+
+        $(".checkout").addClass("checkout--active");
+    });
+
+    $(".checkout__cancel").click(function(){
+
+        $(".checkout").removeClass("checkout--active");
+    }); 
+
+    $('.purchase').click(purchase);
 });
 
+var _clothing = {
+    'shirts':[],
+    'pants':[],
+    'shoes':[]
+}
+
+var _checkout = {
+    'items':[],
+    'total':0.00,
+};
+
+var total = 0.00;
+
+function draw_items(object,key){
+    var insertData,frm,img,NameItem,prc;
+    $('.dummy-grid').html('');
+    for (var i=0; i<object.length; i++ ){
+        img = object[i].image;
+        NameItem = object[i].name;
+        prc = object[i].price;
+        frm ='<form class="add-to-checkout" action="">Quantity:';
+        frm+='<input type="hidden" name="key" value="'+key+'">';
+        frm+='<input type="hidden" name="index" value="'+i+'">';
+        frm+=' <input type="number" name="quantity" min="1" max="99" value="1">';
+        frm+='<button class="BuyNow" type="submit">Add to Cart</button></form>';
+
+        insertData = '<div class="dummy-grid__item"><img src="' + img + '">';
+        insertData += '<div class="NameProd">'+ NameItem +'</div>';
+        insertData += '<div class="PriceProd">'+ '$ ' + prc + '</div>';
+        insertData += frm +'</div>';
+      
+
+        $('.dummy-grid').append(insertData);
+    }
+
+    $('.add-to-checkout').submit(function(event){
+        event.preventDefault();
+        var frm = $(this);
+        add_to_checkout(frm);
+    });
+}
+
+function add_to_checkout(frm){
+    var key = frm.find('input[name="key"]').val();
+    var index = frm.find('input[name="index"]').val();
+    var quantity = frm.find('input[name="quantity"]').val();
+    var item = {
+        'name':_clothing[key][index].name,
+        'price':_clothing[key][index].price,
+        'quantity':quantity
+    }
+
+    total = (parseFloat(_clothing[key][index].price) * quantity) + total;
+    _checkout.items.push(item);
+    _checkout.total = total;
+    draw_to_checkout(_clothing[key][index],quantity);
+
+    console.log(_checkout);
+}
+
+function draw_to_checkout(object,quantity){
+    var html = '<tr><td class="checkOutName">'+object.name+' ('+quantity+' Items)</td><td>$'+object.price+' <i class="fa fa-trash"></i></td></tr>';
+    $('#checkout-list').append(html);
+    $('#checkout__total').html('$'+total.toFixed(2));
+}
 // run ajax request Shirts
-function shirts_call(){
+function items_call(key){
 
     $.ajax({
-    	url: "http://174.129.248.23/brainstation/shop/shirts",
+    	url: "http://174.129.248.23/brainstation/shop/"+key,
         type: "GET",
         dataType: "jsonp",
-           
         success: function (data) {
-            
-            
-            var insertData ='';
-            var len =data.shirts.length;
-            // console.log(len);
-
-            for (var i=0; i<len; i++ ){
-                
-            	 var img = data.shirts[i].image;
-            	 var NameItem = data.shirts[i].name;
-            	 var prc = data.shirts[i].price;
-                 var frm ='Quantity: <input type="number" name="quantity" min="1" max="99"><button class="BuyNow" type="submit">Add to Cart</button></div>'
-
-            	insertData += '<div class="dummy-grid__item"><img src="' + img + '">';
-            	insertData += '<div class="NameProd">'+ NameItem +'</div>';
-            	insertData += '<div class="PriceProd">'+ '$ ' + prc + '</div>';
-                insertData += frm; +'</div>'
-
-                //I have to removed <form> is causing problems
-
-                 $('.dummy-grid').html(insertData);
-
-            	
-				$('.dummy-grid__item').on('click','.BuyNow', function(){
-			    var myIndex = $(this).index('.BuyNow');                
-			    var addName = $('.NameProd')[myIndex];
-
-                console.log(addName);
-			    // var addQuantity = $(this).find(input).val();
-			    // console.log(addName);
-       //          $('.checkOutName').html(addName);
-			    // console.log(addQuantity);
-			    });
-
-            }
-         
-        
+            _clothing[key] = data[key];
+            draw_items(data[key],key);
     	},
     	error:function(){
             $('dummy-grid__item').html("There was an error communicating with the server");
@@ -59,85 +122,18 @@ function shirts_call(){
 
 }
 
-
-
-//Click Shirts
-$('.selectShirt').click(function(){
-		shirts_call();
-});
-
-//Click Pants
-$('.selectPants').click(function(){
-
-	    // run ajax request
+function purchase(){
     $.ajax({
-    	url: "http://174.129.248.23/brainstation/shop/pants",
-        type: "GET",
-        dataType: "jsonp",
-           
-        success: function (data) {
-            console.log(data);
-            
-            var insertImage =" ";
-            for (var i=0; i<data.pants.length; i++ ){
-            	 var img = data.pants[i].image;
-            	 var NameItem = data.pants[i].name;
-            	 var prc = data.pants[i].price;
-            	insertImage += '<div class="dummy-grid__item"><img src="' + img + '">';
-            	insertImage += '<div class="NameProd">'+ NameItem +'</div>';
-            	insertImage += '<div class="PriceProd">'+ '$ ' + prc + '</div></div>'
-            	 $('.dummy-grid').html(insertImage);
-            }
-
-    	},
-    	error:function(){
-            $('dummy-grid__item').html("There was an error communicating with the server");
-            } 
-	});
-});
-
-
-//Click Shoes
-$('.selectShoes').click(function(){
-
-	    // run ajax request
-    $.ajax({
-    	url: "http://174.129.248.23/brainstation/shop/shoes",
-        type: "GET",
-        dataType: "jsonp",
-           
-        success: function (data) {
-            console.log(data);
-            
-            var insertImage =" ";
-            for (var i=0; i<data.shoes.length; i++ ){
-            	 var img = data.shoes[i].image;
-            	 var NameItem = data.shoes[i].name;
-            	 var prc = data.shoes[i].price;
-            	insertImage += '<div class="dummy-grid__item"><img src="' + img + '">';
-            	insertImage += '<div class="NameProd">'+ NameItem +'</div>';
-            	insertImage += '<div class="PriceProd">'+ '$ ' + prc + '</div></div>'
-            	 $('.dummy-grid').html(insertImage);
-            }
-
-    	},
-    	error:function(){
-            $('dummy-grid__item').html("There was an error communicating with the server");
-            } 
-	});
-});
+        url:'http://174.129.248.23/brainstation/shop/purchase',
+        data:{'items':JSON.stringify(_checkout.items),'total':_checkout.total},
+        method:'POST',
+        dataType:'jsonp',
+        success:function(data){console.log(data)},
+        error:function(data){console.log(data)}
+    })
+}
 
 
 
 
 
-
-$(".checkout__button").click(function(){
-
-	$(".checkout").addClass("checkout--active");
-});
-
-$(".checkout__cancel").click(function(){
-
-	$(".checkout").removeClass("checkout--active");
-});
