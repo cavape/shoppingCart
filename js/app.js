@@ -36,8 +36,17 @@ $(document).ready(function(){
         $(".checkout").removeClass("checkout--active");
     }); 
 
+
     $('.purchase').click(purchase);
+
+    
+
+    $('.container').click(hide_thank_popup);
+   
+
 });
+   
+//Global variables
 
 var _clothing = {
     'shirts':[],
@@ -51,6 +60,9 @@ var _checkout = {
 };
 
 var total = 0.00;
+
+
+// Functions
 
 function draw_items(object,key){
     var insertData,frm,img,NameItem,prc;
@@ -93,17 +105,26 @@ function add_to_checkout(frm){
 
     total = (parseFloat(_clothing[key][index].price) * quantity) + total;
     _checkout.items.push(item);
-    _checkout.total = total;
+    // _checkout.total = total;
     draw_to_checkout(_clothing[key][index],quantity);
 
     console.log(_checkout);
 }
 
 function draw_to_checkout(object,quantity){
-    var html = '<tr><td class="checkOutName">'+object.name+' ('+quantity+' Items)</td><td>$'+object.price+' <i class="fa fa-trash"></i></td></tr>';
+    var html = '<tr><td class="checkOutName">'+object.name+' ('+quantity+' Items)</td><td class="itemTotal">$'+object.price+'</td><td><button class="remove"><i class="fa fa-trash"></i></button></td></tr>';
     $('#checkout-list').append(html);
     $('#checkout__total').html('$'+total.toFixed(2));
 }
+
+function hide_thank_popup(){
+    // $('.overlay').fadeOut(800);
+    $('.thanks').fadeOut(400);
+    $(".container").removeClass("addContainer");
+    // console.log('close');
+}
+
+
 // run ajax request Shirts
 function items_call(key){
 
@@ -128,12 +149,32 @@ function purchase(){
         data:{'items':JSON.stringify(_checkout.items),'total':_checkout.total},
         method:'POST',
         dataType:'jsonp',
-        success:function(data){console.log(data)},
+        success:function(data){
+            console.log(data)
+            $(".thanks").css("display", "block");
+            $(".container").addClass("addContainer");
+        },
         error:function(data){console.log(data)}
     })
 }
 
 
 
+
+
+  $('#checkout-list').on('click','.remove', function(){
+        var myIndex=$(this).index('.remove');
+    
+        removeOrder(myIndex);
+        $(this).closest( "tr" ).remove();
+        // $('#checkout__total').html(total-49.50)
+    });
+
+function removeOrder(myIndex){
+
+    _checkout.items.splice(myIndex,1);
+    console.log('deleted')
+    // add_to_checkout(frm);
+}
 
 

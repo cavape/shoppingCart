@@ -721,6 +721,31 @@ input{
 }
 
 
-.checkOutName{
+.checkOutNamex{
 	text-transform: initial;
 }
+
+.thanks{
+	position: absolute;
+	width:700px;
+	height:400px;
+	padding:20px;
+	box-sizing: border-box;
+	display: none;
+	top:0px;
+	bottom:50%;
+	left:-630px;
+	right:50%;
+	margin-top:-50px;
+	margin-left:-150px;
+	background:white;
+	border:2px solid #333;
+	border-radius:5px;
+	z-index:20;
+}
+
+.addContainer{
+	  background: rgba(90,90,90,0.9);
+}
+
+
